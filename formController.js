@@ -4,7 +4,31 @@ const fs = require('fs');
 
 // Define your routes
 formController.get('/', (req, res) => {
-    res.send('Hello, World!');
+
+    var message = 
+    "Welcome to Daisy1 project\n\n" +
+    "Endpoints:\n" + 
+    "1. /create/form : new form creation\n" +
+    "2. /form/{form_id} : to submit a response";
+
+    res.send(message);
+
+    // we can show this data on homepage:
+    // 1. list of available form ids in system []
+    // 2. how to create a new form
+    // 3. how to fill a form 
+
+
+
+    // {
+    //   "title":"Welcome to Daisy1 project",
+    //   "guidelines": {
+    //     "formCreation": "hit this endpoint for form creation: GET /create/form",
+    //     "responseSubmission": "hit this endpoint for form submission:  ??"
+    //   },
+    //   "allFormIds": [123, 342, 234235]
+    // }
+    
 });
 
 
