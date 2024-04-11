@@ -5,13 +5,22 @@ const fs = require('fs');
 // Define your routes
 formController.get('/', (req, res) => {
 
-    var message = 
-    "Welcome to Daisy1 project\n\n" +
-    "Endpoints:\n" + 
-    "1. /create/form : new form creation\n" +
-    "2. /form/{form_id} : to submit a response";
+    fs.readFile('homePageMessage.txt', 'utf8', (err, fileContent) =>{
+        if (err) {
 
-    res.send(message);
+            console.log("ERROR in reading message from homePageMessage.txt: ");
+            console.error(err);
+            var message = "error in reading message from homePageMessage.txt :\n";
+            res.send(message + err);
+
+          } else {
+            console.log("fileContent read =" + fileContent);
+            res.send(fileContent);
+          }
+    })
+
+
+    
 
     // we can show this data on homepage:
     // 1. list of available form ids in system []

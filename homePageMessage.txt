@@ -1,0 +1,11 @@
+
+Welcome to Daisy1 project
+    
+Endpoints:
+1. /create/form : new form creation
+2. /form/{form_id} : to submit a response
+3. something 
+4. something
+
+
+// describe here functionality of all endpoints
