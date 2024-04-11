@@ -1,0 +1,33 @@
+{
+  "formMetadata": {
+    "name": "sample form name",
+    "description": "sample description",
+    "creatorName": "someone"
+  },
+  "useCasesAttached": {
+   "smsNotification":"no",
+   "gSheetSync":"yes"
+  },
+  "userData": {
+    "name" : "rohan",
+    "email" : "rohan@google.com",
+    "contactNumber" : "+919876543210"
+  },
+  "questions": [
+    {
+        "qustionTitle": "What is your salary",
+        "answerDataType": "int",
+        "answer": "50000"
+    },
+    {
+        "qustionTitle": "What is your saving",
+        "answerDataType": "int",
+        "answer": "50000"
+    },
+    {
+        "qustionTitle": "Where do you live?",
+        "answerDataType": "string",
+        "answer": "Delhi"
+    }
+  ]
+}
