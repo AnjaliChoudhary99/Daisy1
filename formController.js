@@ -1,6 +1,12 @@
 const express = require('express');
 const formController = express.Router();
 const fs = require('fs');
+const mongoose = require("mongoose")
+
+//argument is path to file without extension name which contains the model
+const formStructure = require('./schema'); 
+const { log } = require('console');
+const Form = mongoose.model("Form", formStructure);
 
 // Define your routes
 formController.get('/', (req, res) => {
@@ -68,13 +74,26 @@ function validationPassed(){
     return true;
 }
 
-function saveInDb(){
-    return 1;
+async function saveInDb(jsonBody){
+    const newForm = new Form({
+      formMetadata: jsonBody.formMetadata
+
+    })
+    console.log("meta data of json body: "+ jsonBody.formMetadata)
+
+    try {
+      const savedForm = await newForm.save(); // Wait for save to complete
+      log("Success: Form saved to DB :" + savedForm);
+      return savedForm._id;
+    } catch (err) {
+      console.error(err);
+      return -1;
+    }
 }
 
 
 
-formController.post('/create/form', (req,res) => {
+formController.post('/create/form', async (req,res) => {
     console.log("POST: /create/form");
     // body-parser middleware returns 400 bad request if invalid json is there
 
@@ -85,7 +104,8 @@ formController.post('/create/form', (req,res) => {
     }
     
     // save to DB
-    var generatedFormId = saveInDb();
+    console.log("req.body before saving to db: "+ req.body)
+    var generatedFormId = await saveInDb(req.body); //wait for this to complete
 
     // trigger the attached use cases
     

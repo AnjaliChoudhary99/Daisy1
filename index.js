@@ -3,6 +3,7 @@ const express= require("express");
 const app= express();
 const port = 3001;
 var server = require('http').Server(app);
+const mongoose = require('mongoose');
 
 const ejs = require("ejs");
 app.set("view engine", "ejs");
@@ -29,6 +30,17 @@ const fc = require('./formController');
 
 // Use formControlleres as middleware
 app.use('/', fc);
+
+
+var DB_URL = "mongodb://127.0.0.1:27017/atlan_db";
+db = mongoose.connect(DB_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(()=>{
+    console.log("connected to db")
+}).catch((err)=>{
+    console.log("Error connecting to db: " + err.message);
+})
 
 
 

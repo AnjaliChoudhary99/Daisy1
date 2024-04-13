@@ -1,6 +1,6 @@
 {
-  "formMetadata": {
-    "name": "sample form name",
+  "formMetaData": {
+    "formTitle": "sample form name",
     "description": "sample description",
     "creatorName": "someone"
   },
