@@ -1,13 +1,18 @@
 
 const express= require("express");
 const app= express();
-const port = 3001;
 var server = require('http').Server(app);
 const mongoose = require('mongoose');
 
-const ejs = require("ejs");
-app.set("view engine", "ejs");
+const formController = require('./formController');
+const responseController = require("./responseController");
 
+const User = mongoose.model('User');
+
+// const ejs = require("ejs");
+// app.set("view engine", "ejs");
+
+const port = 3001;
 
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
@@ -25,11 +30,12 @@ app.use((error, req, res, next) => {
     }
 });
 
-// require formcoltroller
-const fc = require('./formController');
 
 // Use formControlleres as middleware
-app.use('/', fc);
+app.use('/', formController); //TODO - change this also to regex
+app.get( /\/submit\/form\/.*/, responseController);
+app.post( /\/submit\/form\/.*/, responseController);
+
 
 
 var DB_URL = "mongodb://127.0.0.1:27017/atlan_db";
@@ -46,4 +52,6 @@ db = mongoose.connect(DB_URL, {
 
 server.listen(port, function(){
   console.log("Server listening on port ", port);
+  const new_user = new User({username:"akhil server"});
+  new_user.save();
 });
