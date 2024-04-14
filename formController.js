@@ -6,51 +6,31 @@ const mongoose = require("mongoose")
 //argument is path to file without extension name which contains the model
 const formStructure = require('./schema'); 
 const { log } = require('console');
-const Form = mongoose.model("Form", formStructure);
+// var Form = mongoose.model("Form", formStructure);
+const Form = mongoose.model("Form");
+// const User = mongoose.model('User');
 
-// Define your routes
+
 formController.get('/', (req, res) => {
-
     fs.readFile('homePageMessage.txt', 'utf8', (err, fileContent) =>{
-        if (err) {
-
-            console.log("ERROR in reading message from homePageMessage.txt: ");
-            console.error(err);
-            var message = "error in reading message from homePageMessage.txt :\n";
-            res.send(message + err);
-
-          } else {
-            console.log("fileContent read =" + fileContent);
-            res.send(fileContent);
-          }
+      if (err) {
+          console.log("ERROR in reading message from homePageMessage.txt: " + err.message);
+          var message = "error in reading message from homePageMessage.txt :\n";
+          res.send(message + err);
+        } else {
+          res.send(fileContent);
+        }
     })
-
-
-    
-
-    // we can show this data on homepage:
-    // 1. list of available form ids in system []
-    // 2. how to create a new form
-    // 3. how to fill a form 
-
-
-
-    // {
-    //   "title":"Welcome to Daisy1 project",
-    //   "guidelines": {
-    //     "formCreation": "hit this endpoint for form creation: GET /create/form",
-    //     "responseSubmission": "hit this endpoint for form submission:  ??"
-    //   },
-    //   "allFormIds": [123, 342, 234235]
-    // }
-    
 });
 
 
 formController.post('/', (req, res) => {
     // Handle POST request
     res.send('POST request received!');
-});
+})
+
+
+
 
 // GET route for form creation
 formController.get('/create/form', (req,res) => {
@@ -62,9 +42,7 @@ formController.get('/create/form', (req,res) => {
           console.log("ERROR: reading from file");
           console.error(err);
         } else {
-          console.log("fileContent=" + fileContent);
-          var message = "It is a sample form json, modify it and send a post request:\n\n\n" + fileContent;
-          res.send(message);
+          res.send(JSON.parse(fileContent));
         }
       });
 
@@ -74,42 +52,36 @@ function validationPassed(){
     return true;
 }
 
-async function saveInDb(jsonBody){
-    const newForm = new Form({
-      formMetadata: jsonBody.formMetadata
+async function saveFormInDb(jsonBody){
 
-    })
-    console.log("meta data of json body: "+ jsonBody.formMetadata)
-
-    try {
-      const savedForm = await newForm.save(); // Wait for save to complete
-      log("Success: Form saved to DB :" + savedForm);
-      return savedForm._id;
-    } catch (err) {
-      console.error(err);
-      return -1;
-    }
+    // desearialize the json object and pass the key-value pairs to Form() argument
+    const newForm = new Form( 
+      {useCasesAttached, userData, metadata, questions } = jsonBody 
+    )
+    const savedForm = await newForm.save(); // Wait for save to complete
+    return savedForm._id;
 }
 
 
 
+// CREATE A NEW FORM
+// body-parser middleware returns 400 bad request if invalid json entered by user
 formController.post('/create/form', async (req,res) => {
     console.log("POST: /create/form");
-    // body-parser middleware returns 400 bad request if invalid json is there
-
-    // validate the individual data types... LATER
-    if( !validationPassed(req.body) ){
+    
+    if( !validationPassed(req.body) ){ // validate the individual data types... LATER
       console.log("ERROR: validation failed for body = " + JSON.stringify(req.body));
       res.send("invalid data types");
     }
-    
-    // save to DB
-    console.log("req.body before saving to db: "+ req.body)
-    var generatedFormId = await saveInDb(req.body); //wait for this to complete
 
-    // trigger the attached use cases
+    var savedFormId;
+    try {
+      savedFormId = await saveFormInDb(req.body);
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
     
-    // TODO implement this in loop
+    // trigger the attached use cases - TODO implement this in loop
     if(req.body.useCasesAttached.smsNotification == "yes"){
         console.log("sms wanted: yes");
     }
@@ -117,7 +89,7 @@ formController.post('/create/form', async (req,res) => {
         console.log("gsheet entry wanted: yes");
     }
 
-    res.send("request successful & form id = " + generatedFormId);
+    res.send("form creation successful & form id = " + savedFormId);
 })
 
 module.exports = formController;
