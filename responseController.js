@@ -66,8 +66,6 @@ responseController.post( "/submit/form/:form_id" , async (req,res) => {
         listOfAnswers.push(temp);
     }
 
-
-
     var savedResponse;
     try {
         const newResponse = new Response({
@@ -77,14 +75,14 @@ responseController.post( "/submit/form/:form_id" , async (req,res) => {
         })
 
         // TODO: logic for form resubmission by a user - check is form_id & email_id combination is present, then update it.
-
         savedResponse = await newResponse.save();
     } catch (error) {
       return res.status(400).send(error.message);
     }
 
     // save to gsheet ?
-    // notify
+
+    // sms notify ?
     
     
     res.send("response submitted & response id = " + savedResponse._id);
@@ -92,7 +90,8 @@ responseController.post( "/submit/form/:form_id" , async (req,res) => {
 
 
 
-// make a handler for fetching a saved response also - TODO
+// make a handler for fetching a saved response with responseId - TODO
+// make a handler for fetching all saved response with formId - TODO
 
 
 module.exports = responseController;

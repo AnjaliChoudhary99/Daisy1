@@ -6,6 +6,7 @@ const mongoose = require("mongoose")
 //argument is path to file without extension name which contains the model
 const formStructure = require('./schema'); 
 const { log } = require('console');
+const { addNewSheet, addRowToSheet } = require('./gSheetController');
 // var Form = mongoose.model("Form", formStructure);
 const Form = mongoose.model("Form");
 // const User = mongoose.model('User');
@@ -27,7 +28,7 @@ formController.get('/', (req, res) => {
 formController.post('/', (req, res) => {
     // Handle POST request
     res.send('POST request received!');
-})
+});
 
 
 
@@ -82,11 +83,16 @@ formController.post('/create/form', async (req,res) => {
     }
     
     // trigger the attached use cases - TODO implement this in loop
-    if(req.body.useCasesAttached.smsNotification == "yes"){
+    if(req.body.useCasesAttached.smsNotification){
         console.log("sms wanted: yes");
     }
-    if(req.body.useCasesAttached.gSheetSync == "yes"){
+    if(req.body.useCasesAttached.gSheetSync){
         console.log("gsheet entry wanted: yes");
+        // create new sheet in gsheet with name = formId
+        await addNewSheet(process.env.SPREAD_SHEET_ID, savedFormId);
+
+        // add header row into spreadsheet
+        await addRowToSheet(process.env.SPREAD_SHEET_ID, savedFormId, ["title1", "title2", "title3"])
     }
 
     res.send("form creation successful & form id = " + savedFormId);

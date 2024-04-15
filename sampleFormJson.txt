@@ -28,7 +28,7 @@
     },
     {
         "questionTitle": "Where do you live?",
-        "isAnswerNumber": "false",
+        "isAnswerNumber": "false"
     }
   ]
 }

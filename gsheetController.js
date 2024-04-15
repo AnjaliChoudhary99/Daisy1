@@ -1,4 +1,0 @@
-
-function createNewGoogleSheet(title){
-    
-}

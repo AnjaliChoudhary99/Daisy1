@@ -3,6 +3,7 @@ const express= require("express");
 const app= express();
 var server = require('http').Server(app);
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 const formController = require('./formController');
 const responseController = require("./responseController");
