@@ -7,9 +7,12 @@ const mongoose = require("mongoose")
 const formStructure = require('./schema'); 
 const { log } = require('console');
 const { addNewSheet, addRowToSheet } = require('./gSheetController');
+
+
 // var Form = mongoose.model("Form", formStructure);
 const Form = mongoose.model("Form");
 // const User = mongoose.model('User');
+
 
 
 formController.get('/', (req, res) => {
@@ -85,6 +88,9 @@ formController.post('/create/form', async (req,res) => {
     // trigger the attached use cases - TODO implement this in loop
     if(req.body.useCasesAttached.smsNotification){
         console.log("sms wanted: yes");
+        // phone number = req.body.userData.phoneNumber
+
+        // await sendSms(phoneNumber, smsText)
     }
     if(req.body.useCasesAttached.gSheetSync){
         console.log("gsheet entry wanted: yes");

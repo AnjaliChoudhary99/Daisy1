@@ -50,7 +50,6 @@ db = mongoose.connect(DB_URL, {
 })
 
 
-
 server.listen(port, function(){
   console.log("Server listening on port ", port);
   const new_user = new User({username:"akhil server"});
