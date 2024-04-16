@@ -1,7 +1,7 @@
 
-const { google } = require('googleapis')
+const { google } = require('googleapis');
 const sheets = google.sheets('v4');
-const SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 
 
 // make sure to have 2 env variables
@@ -17,8 +17,9 @@ async function getAuthToken() {
 async function getSpreadSheet({spreadsheetId, auth}) {
     const res = await sheets.spreadsheets.get({
       spreadsheetId,
-      auth,
+      auth
     });
+    
     return res;
 }
 
@@ -52,11 +53,13 @@ async function addSheetIntoSpreadsheet({spreadsheetId, auth, sheetName}) {
 
 async function addNewSheet(spreadsheetId, sheetTitle, index = 0) {
     // Authenticate with Google Sheets API
+    console.log("inside add new sheet function");
+
     const auth = await getAuthToken(); // Replace with your authentication logic
   
     // Create the Sheets API client
     const mysheets = google.sheets({ version: 'v4', auth });
-  
+    console.log("line1");
     // Define the request body
     const request = {
       spreadsheetId,
@@ -71,12 +74,17 @@ async function addNewSheet(spreadsheetId, sheetTitle, index = 0) {
         }],
       },
     };
+
+    console.log("line2");
   
     try {
       // Send the request to add the new sheet
+      console.log("line3 inside catch");
       const response = await mysheets.spreadsheets.batchUpdate(request);
+      console.log("line4 inside catch");
       console.log("success");
       console.log('New sheet added successfully:', response.data.replies[0].addSheet.properties.title);
+      
     } catch (err) {
       console.error('Error adding sheet:', err);
     }
@@ -84,24 +92,26 @@ async function addNewSheet(spreadsheetId, sheetTitle, index = 0) {
 
 
 
-  async function addRowToSheet(spreadsheetId, sheetId, values) {
+  async function addRowToSheet(spreadsheetId, sheetId, rowItemList) {
     const auth = await getAuthToken();
   
     const mysheets = google.sheets({ version: 'v4', auth });
     const rowNumber = await getLastFilledRow(spreadsheetId, sheetId);
     const request = {
       spreadsheetId,
-      range: `${sheetId}!A${rowNumber}:A`, // Adjust range based on your data and insertion point
+      range: `${sheetId}!A${rowNumber}:A`,
+      
+      // Adjust range based on your data and insertion point
       valueInputOption: 'USER_ENTERED',
       resource: {
-        values: [values], // Array of values for the new row (adjust for multiple columns)
+        values: [rowItemList], // Array of values for the new row (adjust for multiple columns)
       },
     };
   
     try {
       // Send the request to append the row
       const response = await mysheets.spreadsheets.values.append(request);
-      console.log('Row added successfully:', response.data.updates.rows[0].values[0]);
+      console.log('Row added successfully');
     } catch (err) {
       console.error('Error adding row:', err);
     }
@@ -110,16 +120,18 @@ async function addNewSheet(spreadsheetId, sheetTitle, index = 0) {
   async function getLastFilledRow(spreadsheetId, sheetId) {
     const request = {
       spreadsheetId,
-      range: `${sheetId}!A:A`, // Get all rows in column A
+      range: `${sheetId}!A:A` // Get all rows in column A
     };
   
     try {
-      const response = await sheets.spreadsheets.values.get(request);
-      const values = response.data.values || [];
+        const auth = await getAuthToken();
+        const mysheets = google.sheets({ version: 'v4', auth });
+        const response = await mysheets.spreadsheets.values.get(request);
+        const values = response.data.values || [];
   
       // Find the last index with a non-empty value
     //   let lastRow = 0;
-      let lastRow = values.length;
+      let lastRow = values.length+1;
     //   for (let i = values.length - 1; i >= 0; i--) {
     //     if (values[i][0]) {
     //       lastRow = i + 1;

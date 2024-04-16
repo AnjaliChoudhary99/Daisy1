@@ -89,13 +89,23 @@ formController.post('/create/form', async (req,res) => {
     if(req.body.useCasesAttached.gSheetSync){
         console.log("gsheet entry wanted: yes");
         // create new sheet in gsheet with name = formId
+        console.log("about to add New Sheet");
         await addNewSheet(process.env.SPREAD_SHEET_ID, savedFormId);
-
+        console.log("new sheet added");
         // add header row into spreadsheet
-        await addRowToSheet(process.env.SPREAD_SHEET_ID, savedFormId, ["title1", "title2", "title3"])
+
+        await addRowToSheet(process.env.SPREAD_SHEET_ID, savedFormId, getHeaderList(req.body) );
     }
 
     res.send("form creation successful & form id = " + savedFormId);
 })
+
+function getHeaderList(input) {
+  var headerList = Object.keys(input.userData);     
+  for(const q of input.questions){
+    headerList.push(q.questionTitle);
+  }
+  return headerList;
+}
 
 module.exports = formController;

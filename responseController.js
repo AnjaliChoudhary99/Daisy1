@@ -3,12 +3,14 @@ const responseController = express.Router();
 const mongoose = require("mongoose")
 const ObjectId = require('mongoose').Types.ObjectId;
 
+
 // this line is important to import all the schema models from schemas.js file
 const formStructure = require('./schema'); 
 
 const Form = mongoose.model("Form");
 const User = mongoose.model('User');
 const Response = mongoose.model('Response');
+const { addNewSheet, addRowToSheet } = require('./gSheetController');
 
 
 async function extractResponseField(jsonForm){
@@ -53,12 +55,24 @@ responseController.get( "/submit/form/:form_id" , async (req,res) => {
 
 } );
 
+function getResponseList(input) {
+    var responseList = [];
+    for( const key of Object.keys(input.userData)){
+        responseList.push(input.userData[key])
+    }     
+    
+    for(const q of input.questions){
+      responseList.push(q.answer);
+    }
+    return responseList;
+}
 
 responseController.post( "/submit/form/:form_id" , async (req,res) => {
     console.log("POST: /submit/form/:form_id");
     const inputJson = req.body;
+
     // extract userData & questions-answers only ?
-    
+
     var listOfAnswers = []
 
     for(const x of req.body.questions){
@@ -81,7 +95,16 @@ responseController.post( "/submit/form/:form_id" , async (req,res) => {
     }
 
     // save to gsheet ?
+    // spreadsheetId, sheetId, rowItemList
 
+    // form ID is sheet id
+  //  addRowToSheet( process.env.SPREAD_SHEET_ID ,req.params.form_id, [req.body.userData.name, req.body.userData.email, req.body.userData.contactNumber] );
+
+
+    var responseInList = getResponseList(req.body);
+    console.log("responseInList created:" + responseInList);
+    await addRowToSheet(process.env.SPREAD_SHEET_ID, req.params.form_id, responseInList);
+    console.log("response added to sheet");
     // sms notify ?
     
     
