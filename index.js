@@ -10,9 +10,6 @@ const responseController = require("./responseController");
 
 const User = mongoose.model('User');
 
-// const ejs = require("ejs");
-// app.set("view engine", "ejs");
-
 const port = 3001;
 
 const bodyParser = require("body-parser");

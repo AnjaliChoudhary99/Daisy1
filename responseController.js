@@ -97,31 +97,24 @@ responseController.post( "/submit/form/:form_id" , async (req,res) => {
    
     // check the use cases attached with this form ID in the data base
     // and then call the respective function
-
-    //**************************************************************/
-    // db.collection('Forms').findOne({ "_id": req.params.form_id }, function(err, thisForm) {
-    //     if (err) {
-    //       console.error('Error finding form:', err);
-    //       return;
-    //     }
-    //     console.log('Found form:', thisForm);
-    //     client.close();
-    //   });
-
-
-
-
-    //************************************************************* */
     
+    var form = await Form.findById(req.params.form_id);
+    console.log("form found: now check attached use case");
+
     // save to gsheet ?
-    var responseInList = getResponseList(req.body);
-    console.log("responseInList created:" + responseInList);
-    await addRowToSheet(process.env.SPREAD_SHEET_ID, req.params.form_id, responseInList);
-    console.log("response added to sheet");
-   
+    if (form.useCasesAttached.gSheetSync === true) {
+        
+        var responseInList = getResponseList(req.body);
+        console.log("responseInList created:" + responseInList);
+        addRowToSheet(process.env.SPREAD_SHEET_ID, req.params.form_id, responseInList);
+        console.log("response added to sheet");
+
+    }
 
     // sms notify ?
-    sendSms(req.body.userData.contactNumber , "Successfully registered!");
+    if(form.useCasesAttached.smsNotification === true){
+        sendSms(req.body.userData.contactNumber , "Successfully registered!");
+    }
     
     res.send("response submitted & response id = " + savedResponse._id);
 } )
